@@ -5,6 +5,8 @@ import { isJSExpression } from '../utils';
 import { columnsField } from './columns-field';
 import { buttonGroupConfigureProp } from '../common/button-groups';
 import { globalStyleField } from './global-style';
+import debounce from 'lodash/debounce';
+import { getFormHeader } from '../services';
 
 const positiveIntegerSetter = {
   componentName: 'NumberSetter',
@@ -15,6 +17,91 @@ const positiveIntegerSetter = {
 };
 
 export const ProTableProps = [
+  {
+    type: 'field',
+    name: 'serverProps',
+    title: '后台服务配置',
+    extraProps: {
+      display: 'accordion',
+      defaultCollapsed: true,
+    },
+    setter: {
+      componentName: 'ObjectSetter',
+      display: 'inline',
+      props: {
+        config: {
+          items: [
+            {
+              type: 'field',
+              name: 'initColumns',
+              title: '初始化数据列',
+              setValue: debounce(async (field, columns) => {
+                // console.log('------->',field,columns);
+              }),
+              onChange:async (value, field)=>{
+                // console.log('------->',field,columns);
+                if(value){
+                  const modelId = field.parent.getPropValue('modelId');
+                  const data = await getFormHeader(modelId);
+                  console.log('data=',JSON.stringify(data),data);
+                  const colField = field.parent.parent.getItems().find((currentValue, index, arr)=>{
+                    return currentValue.name == 'columns';
+                  });
+                  colField.setValue(data);
+                }
+              },
+              setter: 'BoolSetter'
+            },
+            {
+              type: 'field',
+              name: 'filterDatas',
+              title: '查询表单数据源',
+              extraProps: {
+                display: 'inline',
+                defaultValue: {
+                  "type": "JSExpression",
+                    "value": "this.state.filterDatas"
+                },
+              }
+            },
+            {
+              type: 'field',
+              name: 'saveDatas',
+              title: '保存Form表单数据源',
+              extraProps: {
+                display: 'inline',
+                defaultValue: {
+                  "type": "JSExpression",
+                    "value": "this.state.saveDatas"
+                },
+              }
+            },
+            {
+              type: 'field',
+              name: 'modelId',
+              title: '表单对象编号',
+              extraProps: {},
+              setter: 'StringSetter'
+            },
+            {
+              type: 'field',
+              name: 'queryUrl',
+              title: '查询接口地址',
+              extraProps: {},
+              setter: 'StringSetter'
+            },
+            {
+              type: 'field',
+              name: 'saveUrl',
+              title: '保存接口地址',
+              extraProps: {},
+              setter: 'StringSetter'
+            },
+          ]
+        }
+      }
+    }
+  },
   columnsField,
   {
     type: 'field',
@@ -98,6 +185,9 @@ export const ProTableProps = [
       display: 'accordion',
       defaultCollapsed: true,
     },
+    setValue: debounce((field, columns) => {
+      //console.log('page deb', field, columns);
+    }),
     setter: {
       componentName: 'ObjectSetter',
       display: 'inline',
@@ -143,9 +233,13 @@ export const ProTableProps = [
               setter: [
                 {
                   componentName: 'SelectSetter',
-                  initialValue: 10,
+                  initialValue: 2,
                   props: {
                     options: [
+                      {
+                        title: '2',
+                        value: 2,
+                      },
                       {
                         title: '5',
                         value: 5,

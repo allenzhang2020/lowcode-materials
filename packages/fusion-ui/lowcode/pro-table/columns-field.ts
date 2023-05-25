@@ -81,6 +81,7 @@ export const columnsField: IProps = {
               {
                 name: 'dataIndex',
                 title: '数据字段',
+                isRequired: true,
                 display: 'inline',
                 initialValue: (currentValue, defaultValue) =>
                   currentValue || defaultValue || `data-${uuid()}`,

@@ -2,6 +2,8 @@ import { ComponentMetadata, Snippet } from '@ali/lowcode-types';
 import { formItemsProps } from '../pro-form/common/form-base-props';
 import { showWithLabelAlign } from '../utils';
 import { operations } from '../common';
+import { debounce } from 'lodash';
+import { getFormItem } from '../services';
 
 const operationConfig = {
   name: 'operationConfig',
@@ -54,6 +56,69 @@ const FilterMeta: ComponentMetadata = {
   },
   configure: {
     props: [
+      {
+        name: 'serverProps',
+        title: '后台服务配置',
+        extraProps: {
+          display: 'accordion',
+          defaultCollapsed: true,
+        },
+        setter: {
+          componentName: 'ObjectSetter',
+          display: 'inline',
+          props: {
+            config: {
+              items: [
+                {
+                  type: 'field',
+                  name: 'initColumns',
+                  title: '初始化数据列',
+                  setValue: debounce(async (field, columns) => {
+                    //console.log('------->',field,columns);
+                  }),
+                  onChange:async (value, field)=>{
+                    // console.log('------->',field,columns);
+                    if(value){
+                      const children = field.nodes[0].children;
+                      const modelId = field.parent.getPropValue('modelId');
+                      const hotvalue2 = await getFormItem(modelId);
+                      children.mergeChildren((child) => {
+                        return true;
+                      }, () => {
+                        return hotvalue2;
+                      }, (child1, child2) => {
+                        return 1;
+                      });
+    
+                      
+                    }
+                  },
+                  setter: 'BoolSetter'
+                },
+                {
+                  type: 'field',
+                  name: 'modelId',
+                  title: '表单对象编号',
+                  extraProps: {},
+                  setter: 'StringSetter'
+                },
+                {
+                  type: 'field',
+                  name: 'filterDatas',
+                  title: '查询表单数据源',
+                  extraProps: {
+                    display: 'inline',
+                    defaultValue: {
+                      "type": "JSExpression",
+                        "value": "this.state.filterDatas"
+                    },
+                  }
+                },
+              ]
+            }
+          }
+        }
+      },
       {
         name: 'globalConfig',
         title: '全局配置',
@@ -255,7 +320,7 @@ const FilterMeta: ComponentMetadata = {
           },
         ],
       },
-      formItemsProps,
+      // formItemsProps,
       operationConfig,
       operations,
     ],

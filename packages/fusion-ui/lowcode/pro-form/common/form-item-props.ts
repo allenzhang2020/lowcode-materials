@@ -12,10 +12,10 @@ import {
 const primaryKeyConfig = {
   name: 'primaryKey',
   title: '编号',
-  display: 'none',
-  condition: hideProp,
+  // display: 'none',
+  // condition: hideProp,
   defaultValue: (val: any) => {
-    if (val) return val;
+    if (val != undefined) return val;
     return mockId();
   },
   setter: 'StringSetter',

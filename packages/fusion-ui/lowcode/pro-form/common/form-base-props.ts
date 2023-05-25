@@ -1,8 +1,9 @@
-import { isEqual, throttle } from 'lodash';
+import { debounce, isEqual, throttle } from 'lodash';
 
 import { IProps } from '../../types';
 import { formItemShortcutProps as baseFormItemProps } from './form-item-props';
 import { hideProp, showWithLabelAlign } from '../../utils';
+import { getFormItem } from '../../services';
 
 function getInitialPropsForFormItem(componentName, currentComponentProps) {
   const component = AliLowCodeEngine.material
@@ -227,6 +228,82 @@ const props: IProps[] = [
       }
       return 'StringSetter';
     },
+  },
+  {
+    name: 'serverProps',
+    title: '后台服务配置',
+    extraProps: {
+      display: 'accordion',
+      defaultCollapsed: true,
+    },
+    setter: {
+      componentName: 'ObjectSetter',
+      display: 'inline',
+      props: {
+        config: {
+          items: [
+            {
+              type: 'field',
+              name: 'initColumns',
+              title: '初始化数据列',
+              setValue: debounce(async (field, columns) => {
+                //console.log('------->',field,columns);
+              }),
+              onChange:async (value, field)=>{
+                // console.log('------->',field,columns);
+                if(value){
+                  const children = field.nodes[0].children;
+                  const modelId = field.parent.getPropValue('modelId');
+                  const hotvalue2 = await getFormItem(modelId);
+
+                  children.mergeChildren((child) => {
+                    return true;
+                  }, () => {
+                    return hotvalue2;
+                  }, (child1, child2) => {
+                    return 1;
+                  });
+                }
+              },
+              setter: 'BoolSetter'
+            },
+            {
+              type: 'field',
+              name: 'initFormData',
+              title: '初始化Form表单数据',
+              extraProps: {},
+              setter: 'BoolSetter'
+            },
+            {
+              type: 'field',
+              name: 'modelId',
+              title: '表单对象编号',
+              extraProps: {},
+              setter: 'StringSetter'
+            },
+            {
+              type: 'field',
+              name: 'filterDatas',
+              title: '查询表单数据源',
+              extraProps: {
+                display: 'inline',
+                defaultValue: {
+                  "type": "JSExpression",
+                    "value": "this.state.filterDatas"
+                },
+              }
+            },
+            {
+              type: 'field',
+              name: 'queryUrl',
+              title: '查询接口地址',
+              extraProps: {},
+              setter: 'StringSetter'
+            },
+          ]
+        }
+      }
+    }
   },
   {
     name: 'globalConfig',
@@ -566,7 +643,7 @@ const props: IProps[] = [
     },
     defaultValue: 'desktop',
   },
-  formItemsProps,
+  // formItemsProps,
 ];
 
 export default props;

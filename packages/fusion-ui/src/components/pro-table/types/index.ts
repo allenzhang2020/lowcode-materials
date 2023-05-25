@@ -453,7 +453,8 @@ export interface ProTableProps
    * 全屏状态变化回调
    */
   onFullscreenStateChange?: (fullscreenState: boolean) => void;
-
+  onPageItemChanged?: (current:number, e:{}) => void;
+  
   /**
    * 是否是子母表的子表
    * @default false
@@ -461,4 +462,5 @@ export interface ProTableProps
   isExpandedChild?: boolean;
 
   paginationProps?: Record<string, any>;
+  serverProps?: Record<string, any>;
 }

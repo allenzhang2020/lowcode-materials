@@ -127,6 +127,7 @@ export const ProTable: React.FC<ProTableProps> = (props: ProTableProps) => {
                     <Pagination
                       className="fusion-ui-pagination"
                       {...paginationProps}
+                      onChange={props.onPageItemChanged}
                       popupProps={{
                         container: proTableContainer.current,
                         ...paginationProps.popupProps,

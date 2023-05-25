@@ -3,6 +3,7 @@ import { Button } from '@alifd/next';
 
 import { ProTable, ProTableProps } from '../../index';
 import { Space } from '@/components/container';
+import { query, save } from '@/service/service';
 
 export interface EditTableProps extends ProTableProps {
   addPosition?: 'end' | 'start';
@@ -20,10 +21,14 @@ export const EditTable = function (props: EditTableProps) {
     onRemove,
     onCancel,
     addPosition = 'end',
+    paginationProps : propPaginationProps,//如果这里增加了，那么otherProps会被排除调，要将这个属性加到protable上去
+    serverProps: propServerProps,
     ...otherProps
   } = props;
   const [dataSource, setDataSource] = React.useState(propDataSource);
   const dataSourceRef = React.useRef(dataSource);
+  const [paginationProps, setPaginationProps] = React.useState(propPaginationProps);
+  const paginationPropsRef = React.useRef(paginationProps);
   const [actionColumnButtons, setActionColumnButtons] = React.useState(propActionColumnButtons);
   function actionColumnButtonsHidden(showInEdit) {
     return ({ rowRecord }) => {
@@ -94,6 +99,67 @@ export const EditTable = function (props: EditTableProps) {
       },
     },
   ];
+
+  //使用useCallback这样只会初始化一次
+  const refreshDataSource = React.useCallback(async (currentPage: number, filterParam?:object)=>{
+    const pageParm = {pageNum:currentPage,pageSize:paginationPropsRef.current.pageSize};
+    
+    //target对象会被修改
+    let obj = filterParam;
+    let pageVal = pageParm;
+    if(obj != undefined){
+      pageVal = Object.assign(obj, pageParm);
+    }
+    
+    console.log('pageVal', pageVal);
+    //首次查询
+    
+    //'/api/queryUserInfo'
+      const data = await query(pageVal, propServerProps.queryUrl);
+      console.log('data=',JSON.stringify(data),data);
+      if(data.dataList == null){
+        dataSourceRef.current = [];
+      }else{
+        dataSourceRef.current = data.dataList;
+      }
+
+      setDataSource(dataSourceRef.current);
+  
+      paginationPropsRef.current.total = data.total;
+      paginationPropsRef.current.current = currentPage;
+      setPaginationProps(paginationPropsRef.current);
+      console.log('paginationProps init',paginationProps, propPaginationProps);
+    
+  },[]);
+
+  React.useEffect(() => {
+    //初始化数据
+    refreshDataSource(1, propServerProps.filterDatas);
+  },[refreshDataSource, propServerProps.filterDatas]);//当第一次初始化和当propFilterProps发生变化是都会调用刷新数据的方法
+
+
+  //保存数据
+  const saveData = React.useCallback(async (datas?:object)=>{
+    console.log('save data', datas);
+
+    if(Object.keys(datas).length > 0){
+      //'/api/saveUserInfo'
+      const data = await save(datas, propServerProps.saveUrl);
+      console.log('data=',JSON.stringify(data),data);
+
+      //保存成功则重新查询数据
+      refreshDataSource(1, propServerProps.filterDatas);
+    }else{
+      console.log('save data对象为空，不保存')
+    }
+
+  },[]);
+
+  React.useEffect(() => {
+    //初始化数据
+    saveData(propServerProps.saveDatas);
+  },[saveData, propServerProps.saveDatas]);//当第一次初始化和当propFilterProps发生变化是都会调用刷新数据的方法
+
   React.useEffect(() => {
     const { dataSource: actionColumnDataSource = [] } = propActionColumnButtons;
     const _actionColumnButtons = {
@@ -132,13 +198,20 @@ export const EditTable = function (props: EditTableProps) {
       </Button>
     </Space>
   );
+
+  const onPageItemChanged = async (value)=>{
+    refreshDataSource(value);
+  }
+
   return (
     <>
       <ProTable
         className="fusion-ui-edit-table"
         tableAfter={tableAfter}
         dataSource={dataSource}
+        onPageItemChanged={onPageItemChanged}
         actionColumnButtons={actionColumnButtons}
+        paginationProps={propPaginationProps}
         {...otherProps}
       />
     </>

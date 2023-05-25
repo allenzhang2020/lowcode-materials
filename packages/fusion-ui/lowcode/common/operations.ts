@@ -176,7 +176,7 @@ export const operations = {
                       display: 'block',
                       condition: (target) => {
                         const action = target.parent.getPropValue('action');
-                        return !action || action === 'custom';
+                        return !action || action === 'custom' || action === 'submit' ;
                       },
                       setter: {
                         componentName: 'BehaviorSetter',
@@ -203,7 +203,7 @@ export const operations = {
                       name: 'onClick',
                       display: 'inline',
                       title: '点击事件',
-                      condition: hideProp,
+                      // condition: hideProp,
                       setter: 'FunctionSetter',
                       extraProps: {
                         supportVariable: true,

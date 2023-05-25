@@ -80,7 +80,7 @@ const Operations: React.FC<OperationProps> = (props) => {
     if (action === 'submit') {
       BtnComp = Form.Submit;
       otherOperationProps.validate = true;
-      otherOperationProps.htmlType = 'submit';
+      // otherOperationProps.htmlType = 'submit';
     } else if (action === 'reset') {
       BtnComp = Form.Reset;
     } else {
