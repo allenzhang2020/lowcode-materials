@@ -14,7 +14,7 @@ export interface ProTableButtonGroupProps<Payload = unknown> extends SpaceProps 
   /**
    * 可见按钮数量，超过会收起到”更多“菜单中
    */
-  maxCount?: number;
+  visibleButtonCount?: number;
   /**
    * 按钮
    */
@@ -31,7 +31,7 @@ export interface ProTableButtonGroupProps<Payload = unknown> extends SpaceProps 
 
 export const ProTableButtonGroup: React.FC<ProTableButtonGroupProps> = ({
   text,
-  maxCount,
+  visibleButtonCount,
   payload,
   dataSource,
   moreMenuButtonProps,
@@ -39,7 +39,7 @@ export const ProTableButtonGroup: React.FC<ProTableButtonGroupProps> = ({
 }) => {
   const i18nBundle = useI18nBundle('ButtonGroup');
   const realDataSource = usePayloadButtons(dataSource, payload);
-  const splitIndex = getVisibleSplitIndex(realDataSource, maxCount);
+  const splitIndex = getVisibleSplitIndex(realDataSource, visibleButtonCount);
   const visibleButtons = realDataSource.slice(0, splitIndex);
   const menuButtons = realDataSource.slice(splitIndex).map((vo) => omit(vo, ['type', 'text']));
   return (
@@ -62,14 +62,15 @@ export const ProTableButtonGroup: React.FC<ProTableButtonGroupProps> = ({
     </Space>
   );
 };
-ProTableButtonGroup.defaultProps = {
-  maxCount: 4,
-  moreMenuButtonProps: {},
-};
+// ProTableButtonGroup.defaultProps = {
+//   maxCount: 8,
+//   moreMenuButtonProps: {},
+// };
 
 ProTableButtonGroup.displayName = 'ProTableButtonGroup';
 
 const getVisibleSplitIndex = (dataSource: ButtonProps[], maxCount: number) => {
+  console.log('maxCount', maxCount);
   /**
    * ButtonGroup:
    * maxCount 2 时
@@ -91,5 +92,5 @@ const getVisibleSplitIndex = (dataSource: ButtonProps[], maxCount: number) => {
   if (dataSource.length <= maxCount) {
     return dataSource.length;
   }
-  return maxCount - 1;
+  return maxCount;
 };

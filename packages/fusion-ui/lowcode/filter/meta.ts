@@ -79,7 +79,12 @@ const FilterMeta: ComponentMetadata = {
                   onChange:async (value, field)=>{
                     // console.log('------->',field,columns);
                     if(value){
-                      const children = field.nodes[0].children;
+                      let children;
+                      if(field.nodes != undefined){
+                        children = field.nodes[0].children;
+                      }else{
+                        children = field.node.children;
+                      }
                       const modelId = field.parent.getPropValue('modelId');
                       const hotvalue2 = await getFormItem(modelId);
                       children.mergeChildren((child) => {

@@ -195,12 +195,17 @@ const ProForm: React.ForwardRefRenderFunction<any, ProFormProps> = (props: ProFo
     
   },[refreshDataSource, propServerProps]);//当第一次初始化和当propFilterProps发生变化是都会调用刷新数据的方法
 
-  const { isPreview } = otherProps || {};
+  let { isPreview } = otherProps || {};
+  if(propServerProps != undefined && propServerProps.filterDatas != undefined && propServerProps.filterDatas.isPreview != undefined){
+    if(propServerProps.filterDatas.isPreview){
+      isPreview = propServerProps.filterDatas.isPreview;//对于查看的操作，那么通常为只读
+    }
+  }
 
   const operationProps = { operations, operationConfig, lastSaveTime };
   return (
     <>
-      <Form className={cssPrefix} {...otherProps} ref={ref}>
+      <Form className={cssPrefix} {...otherProps} ref={ref} isPreview={isPreview}>
         {propsChildren ? (
           <ResponsiveGrid
             className={classnames(cssPrefix, +columns === 1 ? 'one-column' : '')}

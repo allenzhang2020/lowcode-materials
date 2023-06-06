@@ -10,6 +10,7 @@ export interface EditTableProps extends ProTableProps {
   onSave?: (rowIndex: number, record: Record<string, any>, dataSource: any[]) => void;
   onRemove?: (rowIndex: number, record: Record<string, any>, dataSource: any[]) => void;
   onCancel?: (rowIndex: number, record: Record<string, any>, dataSource: any[]) => void;
+  addRows?: boolean;
 }
 
 export const EditTable = function (props: EditTableProps) {
@@ -23,6 +24,7 @@ export const EditTable = function (props: EditTableProps) {
     addPosition = 'end',
     paginationProps : propPaginationProps,//如果这里增加了，那么otherProps会被排除调，要将这个属性加到protable上去
     serverProps: propServerProps,
+    addRows: propAdds,
     ...otherProps
   } = props;
   const [dataSource, setDataSource] = React.useState(propDataSource);
@@ -35,7 +37,7 @@ export const EditTable = function (props: EditTableProps) {
       return showInEdit ? !!rowRecord.editMode : !rowRecord.editMode;
     };
   }
-  const defaultActionColumnButtons = [
+  const defaultActionColumnButtons = propAdds ? [
     {
       children: '编辑',
       type: 'primary',
@@ -98,7 +100,7 @@ export const EditTable = function (props: EditTableProps) {
         onRemove && onRemove(rowIndex, rowRecord, dataSourceRef.current);
       },
     },
-  ];
+  ] : [];
 
   //使用useCallback这样只会初始化一次
   const refreshDataSource = React.useCallback(async (currentPage: number, filterParam?:object)=>{
@@ -169,8 +171,9 @@ export const EditTable = function (props: EditTableProps) {
     setActionColumnButtons(_actionColumnButtons);
   }, [propActionColumnButtons, dataSource]);
   const tableAfter = (
-    <Space className="row-add" align="center" justify="center">
+    <Space className="row-add" align="center" justify="center" >
       <Button
+        hidden={!propAdds}
         text
         type="primary"
         onClick={() => {

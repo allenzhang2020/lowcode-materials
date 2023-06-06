@@ -44,9 +44,17 @@ export const ProTableProps = [
                   const modelId = field.parent.getPropValue('modelId');
                   const data = await getFormHeader(modelId);
                   console.log('data=',JSON.stringify(data),data);
-                  const colField = field.parent.parent.getItems().find((currentValue, index, arr)=>{
-                    return currentValue.name == 'columns';
-                  });
+                  let colField;
+                  if(field.parent.parent.items != undefined){
+                    colField = field.parent.parent.items.find((currentValue, index, arr)=>{
+                      return currentValue.name == 'columns';
+                    });
+                  }else{
+                    colField = field.parent.parent.getItems().find((currentValue, index, arr)=>{
+                      return currentValue.name == 'columns';
+                    });
+                  }
+                  
                   colField.setValue(data);
                 }
               },

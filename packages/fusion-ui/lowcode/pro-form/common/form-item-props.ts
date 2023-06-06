@@ -635,6 +635,7 @@ export const formItemProps = [
 
 export const formItemShortcutProps = [
   primaryKeyConfig,
+  idConfig,
   nameConfig,
   labelConfig,
   sizeConfig,

@@ -20,7 +20,8 @@ export default [
                 {
                   name: 'primaryKey',
                   title: '项目编号',
-                  condition: () => false,
+                  important: true,
+                  // condition: () => false,
                   setter: 'StringSetter',
                 },
                 {
@@ -38,9 +39,9 @@ export default [
               ],
             },
           },
-          initialValue: () => {
+          initialValue: (target) => {
             return {
-              primaryKey: String(Math.floor(Math.random() * 10000)),
+              primaryKey: 'tab'+String(Math.floor(Math.random() * 10000)),
               title: '标签项',
               closeable: false,
               disabled: false,
@@ -50,20 +51,7 @@ export default [
       },
     },
     extraProps: {
-      getValue(target) {
-        const map = target.node.children.map((child) => {
-          const primaryKey = child.getPropValue('primaryKey')
-            ? String(child.getPropValue('primaryKey'))
-            : child.id;
-          return {
-            primaryKey,
-            title: child.getPropValue('title') || '标签项',
-            closeable: child.getPropValue('closeable'),
-            disabled: child.getPropValue('disabled'),
-          };
-        });
-        return map;
-      },
+
       setValue(target, value) {
         const { node } = target;
         const map = {};
@@ -92,6 +80,7 @@ export default [
             for (const primaryKey in map) {
               if (Object.hasOwnProperty.call(map, primaryKey)) {
                 items.push({
+                  id : primaryKey,
                   componentName: 'TabContainer.Item',
                   props: map[primaryKey],
                 });
@@ -141,6 +130,31 @@ export default [
         ],
       },
     },
+  },
+  {
+    name: 'activeKey',
+    title: '当前激活选项卡key',
+    extraProps: {
+      display: 'inline',
+      defaultValue: {
+        "type": "JSExpression",
+          "value": "this.state.activeKey"
+      },
+    }
+  },
+  {
+    name: 'onClick',
+    title: { label: '切换tab事件', tip: '点击按钮的回调函数' },
+    propType: 'func',
+    setter: [
+      {
+        componentName: 'FunctionSetter',
+        props: {
+          template:
+            'onClick(currentKey,${extParams}){\n// 切换当前激活的tab页\n  this.setState({ activeKey: currentKey }); \n}',
+        }
+      }
+    ]
   },
   {
     name: 'excessMode',

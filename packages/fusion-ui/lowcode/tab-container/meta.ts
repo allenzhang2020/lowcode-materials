@@ -15,20 +15,20 @@ const snippets: Snippet[] = [
         excessMode: 'slide',
       },
       children: [
-        {
-          componentName: 'TabContainer.Item',
-          props: {
-            title: '标签项1',
-            primaryKey: 'tab-item-1',
-          },
-        },
-        {
-          componentName: 'TabContainer.Item',
-          props: {
-            title: '标签项2',
-            primaryKey: 'tab-item-2',
-          },
-        },
+        // {
+        //   componentName: 'TabContainer.Item',
+        //   props: {
+        //     title: '标签项1',
+        //     primaryKey: 'tab-item-1',
+        //   },
+        // },
+        // {
+        //   componentName: 'TabContainer.Item',
+        //   props: {
+        //     title: '标签项2',
+        //     primaryKey: 'tab-item-2',
+        //   },
+        // },
       ],
     },
   },

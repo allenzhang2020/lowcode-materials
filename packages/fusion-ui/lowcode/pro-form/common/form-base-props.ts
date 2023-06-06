@@ -134,11 +134,11 @@ const itemSetValue = throttle((target, value) => {
   );
 });
 
-export const formItemsProps = {
-  name: '!items',
+export const formItemsProps : IProps = {
+  type: 'field',
+  name: 'formitem',
   title: '表单项',
   display: 'accordion',
-  virtual: true,
   setter: {
     componentName: 'ArraySetter',
     props: {
@@ -193,28 +193,6 @@ export const formItemsProps = {
       },
     },
   },
-  getValue: (target) => {
-    const { children } = target.node;
-    const hotValue = children.map((child) => {
-      const { propsData } = child;
-      // 兼容 FroFromItem -> Input 的数据结构
-      if (child.componentName === 'ProFormItem') {
-        const { componentProps, ...formItemProps } = propsData || {};
-        return {
-          ...formItemProps,
-          componentProps,
-        };
-      } else {
-        const { formItemProps, ...componentProps } = propsData || {};
-        return {
-          ...formItemProps,
-          componentName: child.componentName,
-          componentProps,
-        };
-      }
-    });
-    return hotValue;
-  },
   setValue: itemSetValue,
 };
 
@@ -252,7 +230,12 @@ const props: IProps[] = [
               onChange:async (value, field)=>{
                 // console.log('------->',field,columns);
                 if(value){
-                  const children = field.nodes[0].children;
+                  let children;
+                  if(field.nodes != undefined){
+                    children = field.nodes[0].children;
+                  }else{
+                    children = field.node.children;
+                  }
                   const modelId = field.parent.getPropValue('modelId');
                   const hotvalue2 = await getFormItem(modelId);
 
@@ -263,6 +246,31 @@ const props: IProps[] = [
                   }, (child1, child2) => {
                     return 1;
                   });
+
+                  const hotValue = children.map((child) => {
+                    const { propsData } = child;
+                      const { formItemProps, ...componentProps } = propsData || {};
+                      return {
+                        ...formItemProps,
+                        componentName: child.componentName,
+                        componentProps,
+                      };
+                    // }
+                  });
+
+
+                  let colField;
+                  if(field.parent.parent.items != undefined){
+                    colField = field.parent.parent.items.find((currentValue, index, arr)=>{
+                      return currentValue.name == 'formitem';
+                    });
+                  }else{
+                    colField = field.parent.parent.getItems().find((currentValue, index, arr)=>{
+                      return currentValue.name == 'formitem';
+                    });
+                  }
+                  
+                  colField.setValue(hotValue);
                 }
               },
               setter: 'BoolSetter'
@@ -284,12 +292,12 @@ const props: IProps[] = [
             {
               type: 'field',
               name: 'filterDatas',
-              title: '查询表单数据源',
+              title: '初始化表单数据源',
               extraProps: {
                 display: 'inline',
                 defaultValue: {
                   "type": "JSExpression",
-                    "value": "this.state.filterDatas"
+                    "value": "this.state.initFormCriteria"
                 },
               }
             },
@@ -643,7 +651,7 @@ const props: IProps[] = [
     },
     defaultValue: 'desktop',
   },
-  // formItemsProps,
+  formItemsProps,
 ];
 
 export default props;

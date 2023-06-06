@@ -11,21 +11,21 @@ export const globalStyleField = {
       name: 'hasBorder',
       title: '列分隔线',
       display: 'inline',
-      defaultValue: false,
+      defaultValue: true,
       setter: 'BoolSetter',
     },
     {
       name: 'isZebra',
       title: '斑马线',
       display: 'inline',
-      defaultValue: false,
+      defaultValue: true,
       setter: 'BoolSetter',
     },
     {
       name: 'fixedHeader',
       title: '固定表头',
       display: 'inline',
-      defaultValue: false,
+      defaultValue: true,
       setter: 'BoolSetter',
     },
 
@@ -50,6 +50,21 @@ export const globalStyleField = {
             },
           ],
         },
+      },
+    },
+    {
+      name: 'maxBodyHeight',
+      title: {
+        label: '最大内容区域的高度',
+        tip: '最大内容区域的高度,在`fixedHeader`为`true`的时候,超过这个高度会出现滚动条',
+      },
+      setter: {
+        componentName: 'NumberSetter',
+        props: {
+          max: 20480,
+          min: 1,
+        },
+        initialValue: 500
       },
     },
   ],
