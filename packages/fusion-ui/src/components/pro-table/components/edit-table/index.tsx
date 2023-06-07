@@ -15,7 +15,8 @@ export interface EditTableProps extends ProTableProps {
 
 export const EditTable = function (props: EditTableProps) {
   const {
-    primaryKey = 'id',
+    columns: propColumns,
+    primaryKey: propPrimaryKey,
     dataSource: propDataSource,
     actionColumnButtons: propActionColumnButtons = { dataSource: [] },
     onSave,
@@ -27,6 +28,7 @@ export const EditTable = function (props: EditTableProps) {
     addRows: propAdds,
     ...otherProps
   } = props;
+  const [primaryKey, setPrimaryKey] = React.useState(propPrimaryKey);
   const [dataSource, setDataSource] = React.useState(propDataSource);
   const dataSourceRef = React.useRef(dataSource);
   const [paginationProps, setPaginationProps] = React.useState(propPaginationProps);
@@ -135,6 +137,15 @@ export const EditTable = function (props: EditTableProps) {
   },[]);
 
   React.useEffect(() => {
+    propColumns.forEach((value)=>{
+      if(value.isPrimaryKey != undefined && value.isPrimaryKey == true){
+        setPrimaryKey(value.dataIndex);
+      }
+    })
+    // console.log('is primary key 333', primaryKey);
+  },[propPrimaryKey]);
+
+  React.useEffect(() => {
     //初始化数据
     refreshDataSource(1, propServerProps.filterDatas);
   },[refreshDataSource, propServerProps.filterDatas]);//当第一次初始化和当propFilterProps发生变化是都会调用刷新数据的方法
@@ -210,6 +221,8 @@ export const EditTable = function (props: EditTableProps) {
     <>
       <ProTable
         className="fusion-ui-edit-table"
+        columns={propColumns}
+        primaryKey={primaryKey}
         tableAfter={tableAfter}
         dataSource={dataSource}
         onPageItemChanged={onPageItemChanged}

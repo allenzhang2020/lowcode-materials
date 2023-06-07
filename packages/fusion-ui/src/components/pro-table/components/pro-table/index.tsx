@@ -71,6 +71,8 @@ export const ProTable: React.FC<ProTableProps> = (props: ProTableProps) => {
     [columnsFiltersCtxValue.filterPanelVisible, props.loading],
   );
   const hasActionBarButtons = props.actionBarButtons?.dataSource?.length > 0;
+
+ // console.log('primary key', props.primaryKey);
   return (
     <ProTableSettingContext.Provider value={proTableSettingCtxValue}>
       <ProTableColumnsSettingContext.Provider value={columnsSettingCtxValue}>
@@ -148,7 +150,7 @@ ProTable.defaultProps = {
   settingButtons: false,
   defaultColumnsSetting: {},
   columnKey: 'key',
-  primaryKey: 'id',
+  // primaryKey: 'id',
   stickyLock: true,
   resizable: true,
   emptyContent: (

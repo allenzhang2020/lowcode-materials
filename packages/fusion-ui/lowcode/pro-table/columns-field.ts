@@ -11,26 +11,26 @@ export const columnsField: IProps = {
     display: 'accordion',
   },
   setValue: debounce((field, columns) => {
-    const _columns = isJSExpression(columns) ? columns.mock : columns;
-    if (!_columns || !Array.isArray(_columns) || !_columns.length) {
-      return;
-    }
-    const { node } = field;
-    const dataSource = node.getPropValue('dataSource') || [];
-    const _dataSource = isJSExpression(dataSource) ? dataSource.mock : dataSource;
-    if (!_dataSource || !Array.isArray(_dataSource) || !_dataSource.length) {
-      return;
-    }
-    const primaryKey = node.getPropValue('primaryKey') || 'id';
-    const mockRow = mockProTableRow(columns);
-    const newData = dataSource.map((item) => ({
-      [primaryKey]: mockId(),
-      ...mockRow,
-      ...item,
-    }));
-    if (!deepEqual(newData, dataSource)) {
-      node.setPropValue('dataSource', newData);
-    }
+    // const _columns = isJSExpression(columns) ? columns.mock : columns;
+    // if (!_columns || !Array.isArray(_columns) || !_columns.length) {
+    //   return;
+    // }
+    // const { node } = field;
+    // const dataSource = node.getPropValue('dataSource') || [];
+    // const _dataSource = isJSExpression(dataSource) ? dataSource.mock : dataSource;
+    // if (!_dataSource || !Array.isArray(_dataSource) || !_dataSource.length) {
+    //   return;
+    // }
+    // const primaryKey = node.getPropValue('primaryKey') || 'id';
+    // const mockRow = mockProTableRow(columns);
+    // const newData = dataSource.map((item) => ({
+    //   [primaryKey]: mockId(),
+    //   ...mockRow,
+    //   ...item,
+    // }));
+    // if (!deepEqual(newData, dataSource)) {
+    //   node.setPropValue('dataSource', newData);
+    // }
   }),
   setter: {
     componentName: 'ArraySetter',
@@ -86,6 +86,19 @@ export const columnsField: IProps = {
                 initialValue: (currentValue, defaultValue) =>
                   currentValue || defaultValue || `data-${uuid()}`,
                 setter: 'StringSetter',
+              },
+              {
+                name: 'isPrimaryKey',
+                title: '是否为主键',
+                display: 'inline',
+                initialValue: false,
+                extraProps: {
+                  display: 'inline',
+                  defaultValue: false,
+                },
+                setter: {
+                  componentName: 'BoolSetter',
+                },
               },
               {
                 name: 'align',

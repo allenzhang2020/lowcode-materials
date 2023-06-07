@@ -126,65 +126,65 @@ export const ProTableProps = [
     name: 'actionBarButtons',
     title: '操作栏按钮',
   },
-  {
-    type: 'field',
-    name: 'dataSource',
-    title: '表格数据源',
-    display: 'accordion',
-    setter: (target) => {
-      const columns = target.getProps().getPropValue('columns');
-      if (!columns || isJSExpression(columns)) {
-        return {
-          componentName: 'ExpressionSetter',
-        };
-      }
-      const mockRow = mockProTableRow(columns);
-      const primaryKey = target.getProps().getPropValue('primaryKey') || 'id';
+  // {
+  //   type: 'field',
+  //   name: 'dataSource',
+  //   title: '表格数据源',
+  //   display: 'accordion',
+  //   setter: (target) => {
+  //     const columns = target.getProps().getPropValue('columns');
+  //     if (!columns || isJSExpression(columns)) {
+  //       return {
+  //         componentName: 'ExpressionSetter',
+  //       };
+  //     }
+  //     // const mockRow = mockProTableRow(columns);
+  //     const primaryKey = target.getProps().getPropValue('primaryKey') || 'id';
 
-      const items = columns.map((column, index) => {
-        return {
-          title: {
-            label: {
-              type: 'i18n',
-              'en-US': column.dataIndex,
-              'zh-CN': column.title,
-            },
-          },
-          name: column.dataIndex,
-          important: index < 2,
-          setter: getDataSourceItemSetter(column.formatType),
-          defaultValue: mockRow[column.dataIndex],
-        };
-      });
-      return {
-        componentName: 'MixedSetter',
-        props: {
-          setters: [
-            {
-              componentName: 'ArraySetter',
-              props: {
-                itemSetter: {
-                  componentName: 'ObjectSetter',
-                  props: {
-                    config: {
-                      items,
-                    },
-                  },
-                  initialValue: () => {
-                    return {
-                      ...mockRow,
-                      [primaryKey]: mockId(),
-                    };
-                  },
-                },
-              },
-            },
-            'ExpressionSetter',
-          ],
-        },
-      };
-    },
-  },
+  //     const items = columns.map((column, index) => {
+  //       return {
+  //         title: {
+  //           label: {
+  //             type: 'i18n',
+  //             'en-US': column.dataIndex,
+  //             'zh-CN': column.title,
+  //           },
+  //         },
+  //         name: column.dataIndex,
+  //         important: index < 2,
+  //         setter: getDataSourceItemSetter(column.formatType),
+  //         // defaultValue: mockRow[column.dataIndex],
+  //       };
+  //     });
+  //     return {
+  //       componentName: 'MixedSetter',
+  //       props: {
+  //         setters: [
+  //           {
+  //             componentName: 'ArraySetter',
+  //             props: {
+  //               itemSetter: {
+  //                 componentName: 'ObjectSetter',
+  //                 props: {
+  //                   config: {
+  //                     items,
+  //                   },
+  //                 },
+  //                 initialValue: () => {
+  //                   return {
+  //                     // ...mockRow,
+  //                     // [primaryKey]: mockId(),
+  //                   };
+  //                 },
+  //               },
+  //             },
+  //           },
+  //           'ExpressionSetter',
+  //         ],
+  //       },
+  //     };
+  //   },
+  // },
   {
     type: 'field',
     name: 'paginationProps',
