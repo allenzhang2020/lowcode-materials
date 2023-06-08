@@ -42,7 +42,7 @@ export const columnsField: IProps = {
             items: [
               {
                 name: 'title',
-                title: '标题',
+                title: {label:'标题',tip:'表头显示的内容'},
                 display: 'inline',
                 initialValue: '姓名',
                 isRequired: true,
@@ -80,12 +80,67 @@ export const columnsField: IProps = {
               },
               {
                 name: 'dataIndex',
-                title: '数据字段',
+                title: {label:'数据字段',tip:'	指定列对应的字段，支持a.b形式的快速取值'},
                 isRequired: true,
                 display: 'inline',
                 initialValue: (currentValue, defaultValue) =>
                   currentValue || defaultValue || `data-${uuid()}`,
                 setter: 'StringSetter',
+              },
+              {
+                name: 'width',
+                title: {label:'列宽',tip:'注意在锁列的情况下一定需要配置宽度'},
+                isRequired: false,
+                display: 'inline',
+                initialValue: (currentValue, defaultValue) =>
+                  currentValue || defaultValue || 100,
+                setter: 'NumberSetter',
+              },
+              // {
+              //   name: 'width',
+              //   title: '宽度',
+              //   display: 'inline',
+              //   setter: {
+              //     componentName: 'NumberSetter',
+              //     props: {
+              //       units: [
+              //         {
+              //           type: 'px',
+              //           list: true,
+              //         },
+              //         {
+              //           type: '%',
+              //           list: true,
+              //         },
+              //       ],
+              //     },
+              //   },
+              // },
+              // {
+              //   name: 'resizable',
+              //   title: '是否支持列宽调整',
+              //   display: 'inline',
+              //   initialValue: true,
+              //   extraProps: {
+              //     display: 'inline',
+              //     defaultValue: true,
+              //   },
+              //   setter: {
+              //     componentName: 'BoolSetter',
+              //   },
+              // },
+              {
+                name: 'asyncResizable',
+                title: '是否支持异步列宽调整',
+                display: 'inline',
+                initialValue: true,
+                extraProps: {
+                  display: 'inline',
+                  defaultValue: true,
+                },
+                setter: {
+                  componentName: 'BoolSetter',
+                },
               },
               {
                 name: 'isPrimaryKey',
@@ -124,6 +179,18 @@ export const columnsField: IProps = {
                     ],
                   },
                 },
+              },
+              {
+                name: 'colSpan',
+                title: {
+                  label: '横跨的格数',
+                  tip: 'header cell 横跨的格数，设置为0表示不出现此 th'
+                },
+                isRequired: false,
+                display: 'inline',
+                initialValue: (currentValue, defaultValue) =>
+                  currentValue || defaultValue || 0,
+                setter: 'NumberSetter',
               },
 
               {
@@ -201,42 +268,23 @@ export const columnsField: IProps = {
                 setter: 'StringSetter',
               },
 
+              
               {
-                name: 'width',
-                title: '宽度',
+                name: 'hidden',
+                title: '是否隐藏',
                 display: 'inline',
-                setter: {
-                  componentName: 'NumberSetter',
-                  props: {
-                    units: [
-                      {
-                        type: 'px',
-                        list: true,
-                      },
-                      {
-                        type: '%',
-                        list: true,
-                      },
-                    ],
-                  },
+                initialValue: false,
+                setter: 'BoolSetter',
+              },
+              {
+                name: 'maxChars',
+                title: '字数限定',
+                display: 'inline',
+                setter: 'NumberSetter',
+                hidden() {
+                  return this.parent.getParam('formatType').toData() !== 'text';
                 },
               },
-              // {
-              //   name: 'hidden',
-              //   title: '是否隐藏',
-              //   display: 'inline',
-              //   initialValue: false,
-              //   setter: 'BoolSetter',
-              // },
-              // {
-              //   name: 'maxChars',
-              //   title: '字数限定',
-              //   display: 'inline',
-              //   setter: 'NumberSetter',
-              //   hidden() {
-              //     return this.parent.getParam('formatType').toData() !== 'text';
-              //   },
-              // },
 
               {
                 name: 'sortable',
@@ -246,12 +294,61 @@ export const columnsField: IProps = {
                 setter: 'BoolSetter',
               },
               {
+                name: 'sortDirections',
+                title: {label:'排序的方向',tip:'设置 [desc, asc, default]，表示表示降序、升序、不排序'},
+                display: 'inline',
+                initialValue: 'default',
+                isRequired: false,
+                setter: {
+                  componentName: 'SelectSetter',
+                  props: {
+                    options: [
+                      { value: 'desc', title: '降序' },
+                      { value: 'asc', title: '升序' },
+                      { value: 'default', title: '不排序' },
+                    ],
+                  },
+                },
+              },
+              {
                 name: 'searchable',
                 title: '列搜索',
                 display: 'inline',
                 initialValue: false,
                 setter: 'BoolSetter',
               },
+              {
+                name: 'filters',
+                title: {label:'生成标题过滤的菜单',tip:'格式为[{"label":"男", value:"1"},{"label":"女", value:"0"}]'},
+                display: 'inline',
+                initialValue: '[{label:"xxx", value:"xxx"}]',
+                setter: 'JsonSetter',
+              },
+              {
+                name: 'filterMode',
+                title: '过滤的模式',
+                display: 'inline',
+                initialValue: 'multiple',
+                setter: {
+                  componentName: 'RadioGroupSetter',
+                  props: {
+                    options: [
+                      {
+                        title: '单选',
+                        value: 'single',
+                        tip: '单选',
+                      },
+                      {
+                        title: '多选',
+                        value: 'multiple',
+                        tip: '多选',
+                      }
+                    ],
+                    compact: false,
+                  },
+                },
+              },
+
               {
                 name: 'onCellClick',
                 condition: hideProp,

@@ -142,6 +142,49 @@ const EditTableProps = ProTableProps.filter(editTablePropsFilter).map((item) => 
           setter: 'StringSetter',
         },
         {
+          name: 'onRowClick',
+          title: { label: '点击表格', tip: '点击表格每一行触发的事件' },
+          propType: 'func',
+       // condition: hideProp,
+          setter: [
+            {
+              componentName: 'FunctionSetter',
+              props: {
+                template:
+                  '\n onRowClick(record,index,e,${extParams}){\n console.log("onRowClick",record, index, e) \n}\n\n',
+              }
+            }
+          ]
+        },
+        {
+          name: 'onSort',
+          title: { label: '排序事件', tip: '点击列排序触发的事件' },
+          propType: 'func',
+          setter: [
+            {
+              componentName: 'FunctionSetter',
+              props: {
+                template:
+                  '\n onSort(dataIndex,order,${extParams}){\n console.log("onSort",dataIndex, order) \n}\n\n',
+              }
+            }
+          ]
+        },
+        {
+          name: 'onFilter',
+          title: { label: '过滤事件', tip: '点击过滤确认按钮触发的事件' },
+          propType: 'func',
+          setter: [
+            {
+              componentName: 'FunctionSetter',
+              props: {
+                template:
+                  '\n onFilter(filterParams,${extParams}){\n console.log("onFilter",filterParams) \n}\n\n',
+              }
+            }
+          ]
+        },
+        {
           name: 'onResizeChange',
           title: { label: '重设列尺寸事件', tip: '重设列尺寸的时候触发的事件' },
           propType: 'func',
