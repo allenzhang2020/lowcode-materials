@@ -141,6 +141,21 @@ const EditTableProps = ProTableProps.filter(editTablePropsFilter).map((item) => 
           },
           setter: 'StringSetter',
         },
+        {
+          name: 'onResizeChange',
+          title: { label: '重设列尺寸事件', tip: '重设列尺寸的时候触发的事件' },
+          propType: 'func',
+       // condition: hideProp,
+          setter: [
+            {
+              componentName: 'FunctionSetter',
+              props: {
+                template:
+                  'onResizeChange(dataIndex,value,${extParams}){\n console.log("onResizeChange",dataIndex, value) \n}\n\n',
+              }
+            }
+          ]
+        }
       ],
     };
   }

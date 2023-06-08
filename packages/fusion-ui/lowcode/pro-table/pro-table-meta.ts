@@ -278,7 +278,37 @@ export const ProTableProps = [
   {
     type: 'field',
     name: 'rowSelection',
-    condition: () => false,
+    title: '行选择',
+    // condition: () => false,
+    extraProps: {
+      display: 'accordion',
+      defaultCollapsed: true,
+    },
+    setter: {
+      componentName: 'ObjectSetter',
+      display: 'inline',
+      props: {
+        config: {
+                items: [
+                  {
+                    name: 'onChange',
+                    title: { label: '选择改变的时候触发的事件', tip: '注意: 其中records只会包含当前dataSource的数据，很可能会小于selectedRowKeys的长度' },
+                    propType: 'func',
+                    // condition: hideProp,
+                    setter: [
+                      {
+                        componentName: 'FunctionSetter',
+                        props: {
+                          template:
+                            'onRowChange(selectedRowKeys,records,${extParams}){\n console.log("onRowChange",selectedRowKeys, records) \n}\n\n',
+                        }
+                      }
+                    ]
+                  }
+                  ]
+                }
+              }
+            }
   },
   {
     type: 'group',
