@@ -94,7 +94,30 @@ const FilterMeta: ComponentMetadata = {
                       }, (child1, child2) => {
                         return 1;
                       });
+                      const hotValue = children.map((child) => {
+                        const { propsData } = child;
+                          const { formItemProps, ...componentProps } = propsData || {};
+                          return {
+                            ...formItemProps,
+                            componentName: child.componentName,
+                            componentProps,
+                          };
+                        // }
+                      });
     
+    
+                      let colField;
+                      if(field.parent.parent.items != undefined){
+                        colField = field.parent.parent.items.find((currentValue, index, arr)=>{
+                          return currentValue.name == 'formitem';
+                        });
+                      }else{
+                        colField = field.parent.parent.getItems().find((currentValue, index, arr)=>{
+                          return currentValue.name == 'formitem';
+                        });
+                      }
+                      
+                      colField.setValue(hotValue);
                       
                     }
                   },
@@ -325,7 +348,7 @@ const FilterMeta: ComponentMetadata = {
           },
         ],
       },
-      // formItemsProps,
+      formItemsProps,
       operationConfig,
       operations,
     ],
