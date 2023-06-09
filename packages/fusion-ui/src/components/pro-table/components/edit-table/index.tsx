@@ -4,6 +4,7 @@ import { Button } from '@alifd/next';
 import { ProTable, ProTableProps } from '../../index';
 import { Space } from '@/components/container';
 import { query, save } from '@/service/service';
+import { formatAmount } from '@/utils/currency';
 
 export interface EditTableProps extends ProTableProps {
   addPosition?: 'end' | 'start';
@@ -18,6 +19,7 @@ export const EditTable = function (props: EditTableProps) {
     columns: propColumns,
     primaryKey: propPrimaryKey,
     dataSource: propDataSource,
+    totalDataSource: propTotalDataSource,
     actionColumnButtons: propActionColumnButtons = { dataSource: [] },
     onSave,
     onRemove,
@@ -28,6 +30,9 @@ export const EditTable = function (props: EditTableProps) {
     addRows: propAdds,
     ...otherProps
   } = props;
+  const [totalDataSource, setTotalDataSource] = React.useState(propTotalDataSource);
+  const totalDataSourceRef = React.useRef(propTotalDataSource);
+  const [columns, setColumns] = React.useState(propColumns);
   const [primaryKey, setPrimaryKey] = React.useState(propPrimaryKey);
   const [dataSource, setDataSource] = React.useState(propDataSource);
   const dataSourceRef = React.useRef(dataSource);
@@ -106,35 +111,71 @@ export const EditTable = function (props: EditTableProps) {
 
   //使用useCallback这样只会初始化一次
   const refreshDataSource = React.useCallback(async (currentPage: number, filterParam?:object)=>{
-    const pageParm = {pageNum:currentPage,pageSize:paginationPropsRef.current.pageSize};
+      const pageParm = {pageNum:currentPage,pageSize:paginationPropsRef.current.pageSize};
     
-    //target对象会被修改
-    let obj = filterParam;
-    let pageVal = pageParm;
-    if(obj != undefined){
-      pageVal = Object.assign(obj, pageParm);
-    }
+      //target对象会被修改
+      let obj = filterParam;
+      let pageVal = pageParm;
+      if(obj != undefined){
+        pageVal = Object.assign(obj, pageParm);
+      }
     
-    console.log('pageVal', pageVal);
-    //首次查询
-    
-    //'/api/queryUserInfo'
+      //console.log('pageVal', pageVal);
+      //首次查询
       const data = await query(pageVal, propServerProps.queryUrl);
-      console.log('data=',JSON.stringify(data),data);
-      if(data.dataList == null){
+      // console.log('data=',JSON.stringify(data),data);
+      if(data.dataList == undefined || data.dataList == null){
         dataSourceRef.current = [];
       }else{
         dataSourceRef.current = data.dataList;
       }
 
       setDataSource(dataSourceRef.current);
-  
+
+      if(data.totalDataList == undefined || data.totalDataList == null){
+        //如果没有分页，则直接获取当前页面的汇总数据
+        if(data.pages == undefined || data.pages == 1){
+          totalDataSourceRef.current = getTotalData();
+        }else{
+          totalDataSourceRef.current = {};
+        }
+      }else{
+        totalDataSourceRef.current = data.totalDataList;
+      }
+
+      setTotalDataSource(totalDataSourceRef.current);
       paginationPropsRef.current.total = data.total;
       paginationPropsRef.current.current = currentPage;
       setPaginationProps(paginationPropsRef.current);
-      console.log('paginationProps init',paginationProps, propPaginationProps);
-    
+      //console.log('paginationProps init',paginationProps, propPaginationProps);
   },[]);
+
+  const getTotalData = ()=>{
+
+    let totalData = {};
+    //遍历列
+    propColumns.forEach((item)=>{
+      if(!item.hidden && (item.formatType == 'number' || item.formatType == 'money')){
+
+        let totalVal = 0;
+        //遍历数据
+        dataSourceRef.current.forEach((data)=>{
+          //对象的值
+          const objVal = data[item.dataIndex];
+          totalVal = Number(totalVal) + Number(objVal);
+        });
+
+        let data = {};
+        data[item.dataIndex] = formatAmount(totalVal)
+        totalData = Object.assign(totalData, data);
+      }
+
+    });
+
+    return totalData;
+  }
+
+  // console.log('getTotalData', getTotalData());
 
   React.useEffect(() => {
     propColumns.forEach((value)=>{
@@ -153,12 +194,11 @@ export const EditTable = function (props: EditTableProps) {
 
   //保存数据
   const saveData = React.useCallback(async (datas?:object)=>{
-    console.log('save data', datas);
+    //console.log('save data', datas);
 
     if(Object.keys(datas).length > 0){
-      //'/api/saveUserInfo'
       const data = await save(datas, propServerProps.saveUrl);
-      console.log('data=',JSON.stringify(data),data);
+      //console.log('data=',JSON.stringify(data),data);
 
       //保存成功则重新查询数据
       refreshDataSource(1, propServerProps.filterDatas);
@@ -225,6 +265,7 @@ export const EditTable = function (props: EditTableProps) {
         primaryKey={primaryKey}
         tableAfter={tableAfter}
         dataSource={dataSource}
+        totalDataSource={totalDataSource}
         onPageItemChanged={onPageItemChanged}
         actionColumnButtons={actionColumnButtons}
         paginationProps={propPaginationProps}

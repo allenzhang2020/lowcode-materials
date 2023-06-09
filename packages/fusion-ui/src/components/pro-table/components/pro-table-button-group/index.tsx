@@ -70,7 +70,7 @@ export const ProTableButtonGroup: React.FC<ProTableButtonGroupProps> = ({
 ProTableButtonGroup.displayName = 'ProTableButtonGroup';
 
 const getVisibleSplitIndex = (dataSource: ButtonProps[], maxCount: number) => {
-  console.log('maxCount', maxCount);
+  // console.log('maxCount', maxCount);
   /**
    * ButtonGroup:
    * maxCount 2 时
