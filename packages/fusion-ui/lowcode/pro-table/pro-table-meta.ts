@@ -240,31 +240,10 @@ export const ProTableProps = [
               title: '每页行数',
               setter: [
                 {
-                  componentName: 'SelectSetter',
-                  initialValue: 2,
+                  componentName: 'NumberSetter',
+                  initialValue: 100,
                   props: {
-                    options: [
-                      {
-                        title: '2',
-                        value: 2,
-                      },
-                      {
-                        title: '5',
-                        value: 5,
-                      },
-                      {
-                        title: '10',
-                        value: 10,
-                      },
-                      {
-                        title: '20',
-                        value: 20,
-                      },
-                      {
-                        title: '50',
-                        value: 50,
-                      },
-                    ],
+                    min: 0,
                   },
                 },
                 positiveIntegerSetter,

@@ -5,6 +5,7 @@ import { ProTable, ProTableProps } from '../../index';
 import { Space } from '@/components/container';
 import { query, save } from '@/service/service';
 import { formatAmount } from '@/utils/currency';
+import { formatTotalData, getNumberColumns, getTotalData } from '@/utils/totalDataSourceUtil';
 
 export interface EditTableProps extends ProTableProps {
   addPosition?: 'end' | 'start';
@@ -112,12 +113,26 @@ export const EditTable = function (props: EditTableProps) {
   //使用useCallback这样只会初始化一次
   const refreshDataSource = React.useCallback(async (currentPage: number, filterParam?:object)=>{
       const pageParm = {pageNum:currentPage,pageSize:paginationPropsRef.current.pageSize};
-    
       //target对象会被修改
       let obj = filterParam;
       let pageVal = pageParm;
+      const numberColumns = getNumberColumns(propColumns);
+      console.log('refreshDataSource',numberColumns);
+        
       if(obj != undefined){
         pageVal = Object.assign(obj, pageParm);
+
+        let totalData: string[] = [];
+        var i = 0;
+        
+        numberColumns.forEach((item)=>{
+          totalData[i] = item.dataIndex;
+          i ++;
+        })
+
+        //分页参数也带上number字段
+        pageVal = Object.assign(pageVal, {numberColumns : totalData});
+
       }
     
       //console.log('pageVal', pageVal);
@@ -134,13 +149,13 @@ export const EditTable = function (props: EditTableProps) {
 
       if(data.totalDataList == undefined || data.totalDataList == null){
         //如果没有分页，则直接获取当前页面的汇总数据
-        if(data.pages == undefined || data.pages == 1){
-          totalDataSourceRef.current = getTotalData();
+        if(paginationProps.hidden){
+          totalDataSourceRef.current = getTotalData(numberColumns, dataSourceRef.current);
         }else{
           totalDataSourceRef.current = {};
         }
       }else{
-        totalDataSourceRef.current = data.totalDataList;
+        totalDataSourceRef.current = formatTotalData(data.totalDataList);
       }
 
       setTotalDataSource(totalDataSourceRef.current);
@@ -149,31 +164,6 @@ export const EditTable = function (props: EditTableProps) {
       setPaginationProps(paginationPropsRef.current);
       //console.log('paginationProps init',paginationProps, propPaginationProps);
   },[]);
-
-  const getTotalData = ()=>{
-
-    let totalData = {};
-    //遍历列
-    propColumns.forEach((item)=>{
-      if(!item.hidden && (item.formatType == 'number' || item.formatType == 'money')){
-
-        let totalVal = 0;
-        //遍历数据
-        dataSourceRef.current.forEach((data)=>{
-          //对象的值
-          const objVal = data[item.dataIndex];
-          totalVal = Number(totalVal) + Number(objVal);
-        });
-
-        let data = {};
-        data[item.dataIndex] = formatAmount(totalVal)
-        totalData = Object.assign(totalData, data);
-      }
-
-    });
-
-    return totalData;
-  }
 
   // console.log('getTotalData', getTotalData());
 
@@ -254,7 +244,7 @@ export const EditTable = function (props: EditTableProps) {
   );
 
   const onPageItemChanged = async (value)=>{
-    refreshDataSource(value);
+    refreshDataSource(value, propServerProps.filterDatas);
   }
 
   return (
