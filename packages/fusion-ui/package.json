@@ -23,6 +23,7 @@
     "lint:fix": "f2elint fix",
     "dumi": "cross-env APP_ROOT=docs dumi dev",
     "dumi:build": "cross-env APP_ROOT=docs dumi build",
+    "prepublishOnly1": "npm run build && npm run lowcode:build",
     "prepublishOnly": "npm run build && npm run lowcode:build && npm run dumi:build"
   },
   "keywords": [

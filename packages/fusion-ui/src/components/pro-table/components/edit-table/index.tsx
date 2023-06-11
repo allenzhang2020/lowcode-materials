@@ -40,6 +40,7 @@ export const EditTable = function (props: EditTableProps) {
   const [paginationProps, setPaginationProps] = React.useState(propPaginationProps);
   const paginationPropsRef = React.useRef(paginationProps);
   const [actionColumnButtons, setActionColumnButtons] = React.useState(propActionColumnButtons);
+  console.log('propAdds', propAdds);
   function actionColumnButtonsHidden(showInEdit) {
     return ({ rowRecord }) => {
       return showInEdit ? !!rowRecord.editMode : !rowRecord.editMode;
@@ -121,8 +122,9 @@ export const EditTable = function (props: EditTableProps) {
         
       if(obj != undefined){
         pageVal = Object.assign(obj, pageParm);
+      }
 
-        let totalData: string[] = [];
+      let totalData: string[] = [];
         var i = 0;
         
         numberColumns.forEach((item)=>{
@@ -132,8 +134,6 @@ export const EditTable = function (props: EditTableProps) {
 
         //分页参数也带上number字段
         pageVal = Object.assign(pageVal, {numberColumns : totalData});
-
-      }
     
       //console.log('pageVal', pageVal);
       //首次查询
@@ -211,7 +211,8 @@ export const EditTable = function (props: EditTableProps) {
     };
     setActionColumnButtons(_actionColumnButtons);
   }, [propActionColumnButtons, dataSource]);
-  const tableAfter = (
+
+  const tableAfter = (propAdds ? 
     <Space className="row-add" align="center" justify="center" >
       <Button
         hidden={!propAdds}
@@ -240,7 +241,7 @@ export const EditTable = function (props: EditTableProps) {
       >
         +新增一行
       </Button>
-    </Space>
+    </Space> : <Space></Space>
   );
 
   const onPageItemChanged = async (value)=>{
